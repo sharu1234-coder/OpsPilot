@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./contexts/AuthContext";
 import {
@@ -19,10 +19,8 @@ const BackendTicketsPage = lazy(() => import("./pages/BackendTicketsPage"));
 const AssetsPage = lazy(() => import("./pages/AssetsPage"));
 const AnalyticsPage = lazy(() => import("./pages/AnalyticsPage"));
 const CreateAssetPage = lazy(() => import("./pages/CreateAssetPage"));
-const AssetDetailsPage = lazy(() => import("./pages/AssetDetailsPage"));
 const DatabaseAssetDetailsPage = lazy(() => import("./pages/DatabaseAssetDetailsPage"));
 const CreateTicketPage = lazy(() => import("./pages/CreateTicketPage"));
-const TicketDetailsPage = lazy(() => import("./pages/TicketDetailsPage"));
 const PlaceholderPage = lazy(() => import("./pages/PlaceholderPage"));
 const TeamPage = lazy(() => import("./pages/TeamPage"));
 const TeamMemberDetailsPage = lazy(() => import("./pages/TeamMemberDetailsPage"));
@@ -68,14 +66,14 @@ export default function App() {
             <Route path="backend-tickets" element={<BackendTicketsPage />} />
             <Route path="tickets/new" element={<CreateTicketPage />} />
             <Route element={<RequireRole allowedRoles={["admin", "agent"]} />}>
-              <Route path="tickets/:ticketId" element={<TicketDetailsPage />} />
+              <Route path="tickets/:ticketId" element={<Navigate to="/tickets" replace />} />
             </Route>
 
             <Route element={<RequireRole allowedRoles={["admin", "agent"]} />}>
               <Route path="assets" element={<AssetsPage />} />
               <Route path="assets/new" element={<CreateAssetPage />} />
               <Route path="assets/db/:assetId" element={<DatabaseAssetDetailsPage />} />
-              <Route path="assets/:assetId" element={<AssetDetailsPage />} />
+              <Route path="assets/:assetId" element={<Navigate to="/assets" replace />} />
             </Route>
             <Route element={<RequireRole allowedRoles={["admin", "agent"]} />}>
               <Route path="analytics" element={<AnalyticsPage />} />

@@ -1,4 +1,4 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Boxes, CheckCircle2, Laptop, Search,
@@ -80,8 +80,28 @@ export default function AssetsPage() {
   }, []);
 
   useEffect(() => {
-    void loadAssets();
-  }, [loadAssets]);
+    let active = true;
+
+    void fetchAssets().then(
+      (data) => {
+        if (!active) return;
+        setAssets(mapApiAssetsToAssets(data));
+        setError(null);
+        setLoading(false);
+      },
+      (error) => {
+        if (!active) return;
+        setError(
+          error instanceof Error ? error.message : "Unable to load assets"
+        );
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const stats = useMemo(() => ({
     total: assets.length,

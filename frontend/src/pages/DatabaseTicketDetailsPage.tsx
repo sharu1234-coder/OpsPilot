@@ -1,4 +1,4 @@
-﻿import { toast } from "sonner";
+import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import {
@@ -14,12 +14,9 @@ import {
 
 import { fetchTicketById, updateApiTicket, type ApiTicket } from "../lib/api";
 import { mapApiTicketToTicket } from "../lib/ticketAdapter";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/authContextState";
 import DatabaseActivityTimeline from "../components/tickets/DatabaseActivityTimeline";
-import {
-  priorityStyles,
-  statusStyles,
-} from "../components/dashboard/RecentTickets";
+import { priorityStyles, statusStyles } from "../lib/ticketStyles";
 
 export default function DatabaseTicketDetailsPage() {
   const { ticketId } = useParams<{ ticketId: string }>();

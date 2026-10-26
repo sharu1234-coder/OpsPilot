@@ -8,7 +8,7 @@ import MetricCard from "../components/dashboard/MetricCard";
 import TicketTrendChart from "../components/dashboard/TicketTrendChart";
 import RecentTickets from "../components/dashboard/RecentTickets";
 import { fetchTickets, type ApiTicket } from "../lib/api";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/authContextState";
 
 export default function DashboardPage() {
   const { user } = useAuth();

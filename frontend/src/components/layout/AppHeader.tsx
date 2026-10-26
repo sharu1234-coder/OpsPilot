@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Bell, LogOut, Menu, Plus, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/authContextState";
 
 export default function AppHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const navigate = useNavigate();

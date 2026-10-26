@@ -1,10 +1,10 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { ArrowLeft, Save } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
 import { createApiTicket } from "../lib/api";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/authContextState";
 
 const schema = z.object({
   title: z.string().trim().min(5, "Title must contain at least 5 characters").max(150),

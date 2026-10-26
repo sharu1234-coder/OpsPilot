@@ -1,13 +1,13 @@
-﻿import {
-  createContext,
+import {
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
 } from "react";
 
 import type { ReactNode } from "react";
+import { AuthContext } from "./authContextState";
+import type { AuthContextValue, AuthStatus } from "./authContextState";
 
 import {
   AuthApiError,
@@ -21,24 +21,6 @@ import type {
   AuthCredentials,
   AuthUser,
 } from "../lib/authApi";
-
-export type AuthStatus =
-  | "loading"
-  | "authenticated"
-  | "anonymous"
-  | "error";
-
-interface AuthContextValue {
-  user: AuthUser | null;
-  status: AuthStatus;
-  isAuthenticated: boolean;
-  login: (credentials: AuthCredentials) => Promise<AuthUser>;
-  signup: (credentials: AuthCredentials) => Promise<AuthUser>;
-  logout: () => Promise<void>;
-  refreshSession: () => Promise<void>;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
 
 /**
  * A 401 response means no valid authenticated session.
@@ -185,21 +167,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-/**
- * Access authentication state inside React components.
- *
- * Must be called inside an AuthProvider.
- */
-export function useAuth(): AuthContextValue {
-  const context = useContext(AuthContext);
-
-  if (context === null) {
-    throw new Error(
-      "useAuth must be used inside AuthProvider."
-    );
-  }
-
-  return context;
 }

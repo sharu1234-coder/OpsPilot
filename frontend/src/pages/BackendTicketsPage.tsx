@@ -1,4 +1,4 @@
-﻿import BackendTicketForm from "../components/tickets/BackendTicketForm";
+import BackendTicketForm from "../components/tickets/BackendTicketForm";
 import { useEffect, useState } from "react";
 import { Database, RefreshCw, AlertCircle } from "lucide-react";
 import { fetchTickets, type ApiTicket } from "../lib/api";
@@ -25,7 +25,27 @@ export default function BackendTicketsPage() {
   }
 
   useEffect(() => {
-    void loadTickets();
+    let active = true;
+
+    void fetchTickets().then(
+      (data) => {
+        if (!active) return;
+        setTickets(data);
+        setError(null);
+        setLoading(false);
+      },
+      (error) => {
+        if (!active) return;
+        setError(
+          error instanceof Error ? error.message : "Unable to load tickets"
+        );
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (

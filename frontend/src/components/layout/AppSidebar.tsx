@@ -4,7 +4,7 @@ import {
   Settings2, ShieldCheck, Users, X
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/authContextState";
 
 const navigation = [
   { label: "Overview", icon: LayoutDashboard, to: "/" },

@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { Link, useParams } from "react-router-dom";
@@ -51,9 +51,6 @@ export default function DatabaseAssetDetailsPage() {
     let cancelled = false;
 
     if (databaseId === null) {
-      setAsset(null);
-      setError("Invalid database asset ID");
-      setLoading(false);
       return;
     }
 
@@ -92,6 +89,10 @@ export default function DatabaseAssetDetailsPage() {
       cancelled = true;
     };
   }, [databaseId, reloadKey]);
+
+  const displayLoading = databaseId !== null && loading;
+  const displayError =
+    databaseId === null ? "Invalid database asset ID" : error;
 
   const hasChanges = asset !== null && (
     status !== asset.status ||
@@ -163,7 +164,7 @@ export default function DatabaseAssetDetailsPage() {
         Back to Assets
       </Link>
 
-      {loading && (
+      {displayLoading && (
         <div
           role="status"
           className="rounded-2xl border border-slate-200 bg-white p-10 text-center shadow-sm"
@@ -178,7 +179,7 @@ export default function DatabaseAssetDetailsPage() {
         </div>
       )}
 
-      {!loading && error && (
+      {!displayLoading && displayError && (
         <div
           role="alert"
           className="rounded-2xl border border-rose-200 bg-white p-10 text-center shadow-sm"
@@ -190,7 +191,7 @@ export default function DatabaseAssetDetailsPage() {
           </h1>
 
           <p className="mt-2 text-sm text-rose-600">
-            {error}
+            {displayError}
           </p>
 
           <button
@@ -203,7 +204,7 @@ export default function DatabaseAssetDetailsPage() {
         </div>
       )}
 
-      {!loading && !error && asset && (
+      {!displayLoading && !displayError && asset && (
         <>
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>

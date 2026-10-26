@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
@@ -12,10 +12,7 @@ import {
 import type { Ticket } from "../data/dashboard";
 import { fetchTickets } from "../lib/api";
 import { mapApiTicketsToTickets } from "../lib/ticketAdapter";
-import {
-  priorityStyles,
-  statusStyles,
-} from "../components/dashboard/RecentTickets";
+import { priorityStyles, statusStyles } from "../lib/ticketStyles";
 
 export default function TicketsPage() {
   const [query, setQuery] = useState("");

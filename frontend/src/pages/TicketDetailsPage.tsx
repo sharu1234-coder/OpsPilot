@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import {
   ArrowLeft, CalendarClock, CheckCircle2,
@@ -8,10 +8,7 @@ import { toast } from "sonner";
 import type { Ticket } from "../data/dashboard";
 import { getTicketById, updateTicket } from "../lib/ticketUpdates";
 import { getTicketActivity } from "../lib/ticketActivity";
-import {
-  priorityStyles,
-  statusStyles,
-} from "../components/dashboard/RecentTickets";
+import { priorityStyles, statusStyles } from "../lib/ticketStyles";
 
 export default function TicketDetailsPage() {
   const { ticketId } = useParams<{ ticketId: string }>();

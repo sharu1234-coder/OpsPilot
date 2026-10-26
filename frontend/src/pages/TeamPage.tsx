@@ -1,6 +1,6 @@
-﻿import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/authContextState";
 import {
   AlertCircle,
   Building2,
@@ -152,8 +152,30 @@ export default function TeamPage() {
   }, []);
 
   useEffect(() => {
-    void loadMembers();
-  }, [loadMembers]);
+    let active = true;
+
+    void fetchTeamMembers().then(
+      (data) => {
+        if (!active) return;
+        setMembers(data);
+        setError(null);
+        setLoading(false);
+      },
+      (error) => {
+        if (!active) return;
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load team members"
+        );
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const stats = useMemo(
     () => ({

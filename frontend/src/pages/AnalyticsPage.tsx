@@ -1,5 +1,5 @@
-﻿import { exportAnalyticsCSV } from "../lib/exportAnalytics";
-import { fetchTicketTrends } from "../lib/api";
+import { exportAnalyticsCSV } from "../lib/exportAnalytics";
+import { fetchAssets, fetchTickets, fetchTicketTrends } from "../lib/api";
 import TicketCreationChart from "../components/analytics/TicketCreationChart";
 import { useEffect, useState } from "react";
 import {
@@ -23,10 +23,9 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import {
-  getAnalyticsSnapshot,
-  type AnalyticsItem,
-} from "../lib/analytics";
+import { calculateAnalytics, type AnalyticsItem } from "../lib/analytics";
+import { mapApiTicketsToTickets } from "../lib/ticketAdapter";
+import { mapApiAssetsToAssets } from "../lib/assetAdapter";
 
 const COLORS = [
   "#2563EB",
@@ -165,7 +164,12 @@ function ChartCard({
 }
 
 export default function AnalyticsPage() {
-  const [snapshot, setSnapshot] = useState(getAnalyticsSnapshot);
+  const [snapshot, setSnapshot] = useState(
+    () => calculateAnalytics([], [])
+  );
+  const [snapshotLoading, setSnapshotLoading] = useState(true);
+  const [snapshotError, setSnapshotError] = useState<string | null>(null);
+  const [snapshotRefreshKey, setSnapshotRefreshKey] = useState(0);
   const [trendDays, setTrendDays] = useState<7 | 14 | 30>(7);
   const [ticketTrend, setTicketTrend] = useState<
     { date: string; label: string; tickets: number }[]
@@ -176,6 +180,51 @@ export default function AnalyticsPage() {
   const [lastRefreshed, setLastRefreshed] = useState(
     () => new Date().toLocaleTimeString()
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSnapshot() {
+      setSnapshotLoading(true);
+      setSnapshotError(null);
+
+      try {
+        const [tickets, assets] = await Promise.all([
+          fetchTickets(),
+          fetchAssets(),
+        ]);
+
+        if (!cancelled) {
+          setSnapshot(
+            calculateAnalytics(
+              mapApiTicketsToTickets(tickets),
+              mapApiAssetsToAssets(assets)
+            )
+          );
+          setLastRefreshed(new Date().toLocaleTimeString());
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setSnapshot(calculateAnalytics([], []));
+          setSnapshotError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load analytics."
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setSnapshotLoading(false);
+        }
+      }
+    }
+
+    void loadSnapshot();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [snapshotRefreshKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -218,9 +267,8 @@ export default function AnalyticsPage() {
     };
   }, [trendDays, trendRefreshKey]);
   function refresh() {
-    setSnapshot(getAnalyticsSnapshot());
+    setSnapshotRefreshKey((value) => value + 1);
     setTrendRefreshKey((value) => value + 1);
-    setLastRefreshed(new Date().toLocaleTimeString());
   }
 
   return (
@@ -250,7 +298,8 @@ export default function AnalyticsPage() {
 
           <button
             type="button"
-            onClick={() => exportAnalyticsCSV(getAnalyticsSnapshot())}
+            onClick={() => exportAnalyticsCSV(snapshot)}
+            disabled={snapshotLoading || snapshotError !== null}
             className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
           >
             <Download size={16} />
@@ -258,6 +307,18 @@ export default function AnalyticsPage() {
           </button>
         </div>
       </div>
+
+      {snapshotLoading && (
+        <p role="status" className="text-sm text-slate-500">
+          Loading live analytics...
+        </p>
+      )}
+
+      {snapshotError && (
+        <p role="alert" className="rounded-xl bg-rose-50 p-4 text-sm text-rose-700">
+          Unable to load analytics: {snapshotError}
+        </p>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Metric
@@ -366,7 +427,7 @@ export default function AnalyticsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-5 py-4">
         <div className="flex items-center gap-2 text-sm text-slate-600">
           <Activity size={16} className="text-blue-600" />
-          Analytics calculated from your saved demo records.
+          Analytics calculated from PostgreSQL-backed records.
         </div>
 
         <p className="text-xs text-slate-400">

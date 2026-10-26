@@ -1,4 +1,4 @@
-﻿import { useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Loader2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -7,7 +7,7 @@ import {
   type ApiTicket,
   type CreateApiTicket,
 } from "../../lib/api";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/authContextState";
 
 interface Props {
   onCreated: (ticket: ApiTicket) => void;
