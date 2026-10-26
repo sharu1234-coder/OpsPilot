@@ -1,0 +1,26 @@
+[Unit]
+Description=OpsPilot FastAPI Backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=opspilot
+Group=opspilot
+
+WorkingDirectory=/opt/opspilot/backend
+EnvironmentFile=/etc/opspilot/backend.env
+
+ExecStart=/opt/opspilot/backend/.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --proxy-headers --forwarded-allow-ips 127.0.0.1
+
+Restart=on-failure
+RestartSec=5
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/opspilot/backend
+
+[Install]
+WantedBy=multi-user.target

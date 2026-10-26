@@ -1,0 +1,42 @@
+# OpsPilot security and generated files
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.venv/
+**/.venv/
+venv/
+**/venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+**/node_modules/
+frontend/dist/
+dist/
+.vite/
+coverage/
+.coverage
+*.log
+.DS_Store
+Thumbs.db
+# Production deployment secrets
+backend.env
+**/backend.env
+*.env
+*.env.*
+!*.env.example
+!**/*.env.example
+
+# Development and rollback backups
+*.bak
+*.backup
+*.orig
+*.before-*
+*.bak.*
